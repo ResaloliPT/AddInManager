@@ -4,9 +4,9 @@
 
 ## Distribution
 
-For the Manager Itself Refer to: [AddinManager NuGet](https://link)
+For the Manager Itself Refer to: [AddinManager NuGet](https://www.nuget.org/packages/ResaloliPT.AddinManager)
 
-For the Abstractions Refer to: [Abstractions NuGet](https://link)
+For the Abstractions Refer to: [Abstractions NuGet](https://www.nuget.org/packages/ResaloliPT.AddinManager.Abstractions)
 
 ## Usage
 
