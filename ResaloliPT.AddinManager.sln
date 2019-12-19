@@ -5,9 +5,12 @@ VisualStudioVersion = 16.0.29509.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ResaloliPT.AddinManager", "src\ResaloliPT.AddinManager\ResaloliPT.AddinManager.csproj", "{C9B4D7D2-B921-4121-86A2-571FB9BEAEFC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResaloliPT.AddinManager.Abstractions", "src\ResaloliPT.AddinManager.Abstractions\ResaloliPT.AddinManager.Abstractions.csproj", "{8156EEB5-AA5F-4229-8484-3A1C1A6E55C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ResaloliPT.AddinManager.Abstractions", "src\ResaloliPT.AddinManager.Abstractions\ResaloliPT.AddinManager.Abstractions.csproj", "{8156EEB5-AA5F-4229-8484-3A1C1A6E55C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResaloliPT.AddinManager.Test", "src\ResaloliPT.AddinManager.Test\ResaloliPT.AddinManager.Test.csproj", "{35F895E2-AAE3-4429-BF96-C2610232D76B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ResaloliPT.AddinManager.Test", "src\ResaloliPT.AddinManager.Test\ResaloliPT.AddinManager.Test.csproj", "{35F895E2-AAE3-4429-BF96-C2610232D76B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C9B4D7D2-B921-4121-86A2-571FB9BEAEFC} = {C9B4D7D2-B921-4121-86A2-571FB9BEAEFC}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
