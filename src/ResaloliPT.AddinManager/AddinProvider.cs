@@ -90,11 +90,11 @@ namespace ResaloliPT.AddinManager
         {
             var folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, addinManagerOptions.PluginsDirectory);
 
-            var assembliesFiles = Directory.GetFiles(folder, "*.dll", SearchOption.AllDirectories);
+            var externalAssembliesFiles = Directory.GetFiles(folder, "*.dll", SearchOption.AllDirectories);
 
             var scannedPlugins = new List<IAddin>();
 
-            foreach(string file in assembliesFiles)
+            foreach(string file in externalAssembliesFiles)
             {
                 var assembly = Assembly.LoadFile(file);
 
@@ -106,7 +106,28 @@ namespace ResaloliPT.AddinManager
                     .ToList();
             }
 
-            scannedAddins.AddRange(scannedPlugins);
+            scannedAddins.AddRange(scannedPlugins); //Adds External Addins
+
+            AppDomain.CurrentDomain
+                .GetAssemblies()
+                .ToList()
+                .ForEach(assembly =>
+                {
+                    var localAddins = assembly
+                        .GetTypes()
+                        .Where(type => typeof(IAddin).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
+                        .Select(Activator.CreateInstance)
+                        .Cast<IAddin>()
+                        .ToList();
+
+                    scannedAddins.AddRange(localAddins); //Adds Internal Addins
+                });
+
+
+            var distinctAddins = scannedAddins.Distinct().ToList(); //Ensure same plugin is loaded once!
+
+            scannedAddins.Clear();
+            scannedAddins.AddRange(distinctAddins);
         }
 
         private void RegisterPipelineRecursive(IAddin addin, IApplicationBuilder app, IHostEnvironment env, IConfiguration configuration)
