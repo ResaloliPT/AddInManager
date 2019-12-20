@@ -7,7 +7,7 @@
     <Company />
     <Product>AddInManager.Abstractions</Product>
     <PackageProjectUrl></PackageProjectUrl>
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Description>Abstractions to the ResaloliPT.AddInManager AddIn System.</Description>
     <Copyright>Copyright (c) 2019 ResaloliPT</Copyright>
