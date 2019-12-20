@@ -1,6 +1,6 @@
 # AddInManager
 
-.Net Standard 2.1 Library for Loading AddIns into your application
+.Net Standard 2.1 Library for Loading AddIns into your .NET Core 3.0  application
 
 ## Distribution
 
