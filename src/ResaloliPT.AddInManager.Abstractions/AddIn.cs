@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace ResaloliPT.AddInManager.Abstractions
 {
@@ -33,5 +37,11 @@ namespace ResaloliPT.AddInManager.Abstractions
         {
             return Array.Empty<string>();
         }
+
+        public virtual void ConfigureService(IServiceCollection services, IConfiguration configuration)
+        {}
+
+        public virtual void Configure(IApplicationBuilder app, IHostEnvironment env, IConfiguration configuration)
+        {}
     }
 }
