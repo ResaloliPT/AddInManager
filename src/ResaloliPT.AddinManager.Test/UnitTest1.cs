@@ -1,6 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace ResaloliPT.AddinManager.Test
+namespace ResaloliPT.AddInManager.Test
 {
     [TestClass]
     public class UnitTest1

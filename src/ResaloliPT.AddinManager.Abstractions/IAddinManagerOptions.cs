@@ -1,14 +1,14 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace ResaloliPT.AddinManager.Abstractions
+namespace ResaloliPT.AddInManager.Abstractions
 {
-    public interface IAddinManagerOptions
+    public interface IAddInManagerOptions
     {
         /// <summary>
         /// Relative path to the plugins folder. Ex:. /plugins
         /// </summary>
         public string PluginsDirectory { get; set; }
 
-        IAddinManagerOptions GetOptions(IConfiguration configuration);
+        IAddInManagerOptions GetOptions(IConfiguration configuration);
     }
 }

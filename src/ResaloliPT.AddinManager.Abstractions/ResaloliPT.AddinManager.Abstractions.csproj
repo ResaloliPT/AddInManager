@@ -5,13 +5,13 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>ResaloliPT</Authors>
     <Company />
-    <Product>AddinManager.Abstractions</Product>
+    <Product>AddInManager.Abstractions</Product>
     <PackageProjectUrl></PackageProjectUrl>
     <Version>0.1.0</Version>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <Description>Abstractions to the ResaloliPT.AddinManager AddIn System.</Description>
+    <Description>Abstractions to the ResaloliPT.AddInManager AddIn System.</Description>
     <Copyright>Copyright (c) 2019 ResaloliPT</Copyright>
-    <RepositoryUrl>https://github.com/ResaloliPT/AddinManager</RepositoryUrl>
+    <RepositoryUrl>https://github.com/ResaloliPT/AddInManager</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageIcon>Icon.png</PackageIcon>
     <PackageIconUrl />

@@ -4,22 +4,48 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace ResaloliPT.AddinManager.Abstractions
+namespace ResaloliPT.AddInManager.Abstractions
 {
-    public interface IAddin
+    public interface IAddIn
     {
-        public AddinState PipelineState { get; set; }
+        /// <summary>
+        /// Stores the Pipeline Loading State. (Managed by the AddInProvider)
+        /// </summary>
+        public AddInState PipelineState { get; set; }
 
-        public AddinState ServicesState { get; set; }
+        /// <summary>
+        /// Stores the Services Loading State. (Managed by the AddInProvider)
+        /// </summary>
+        public AddInState ServicesState { get; set; }
 
-        public string AddinId { get; set; }
+        /// <summary>
+        /// Stores AddIn Id.
+        /// </summary>
+        public abstract string AddInId { get; }
 
-        public IEnumerable<string> AddinPipelineDependencies { get; set; }
+        /// <summary>
+        /// Stores the Pipeline Dependencies.
+        /// </summary>
+        public IEnumerable<string> AddInPipelineDependencies { get; }
 
-        public IEnumerable<string> AddinServicesDependencies { get; set; }
+        /// <summary>
+        /// Stores the Services Dependencies.
+        /// </summary>
+        public IEnumerable<string> AddInServicesDependencies { get; }
 
+        /// <summary>
+        /// Configures the AddIn Service DI. (Optional Override)
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <param name="configuration">The configuration.</param>
         virtual void ConfigureService(IServiceCollection services, IConfiguration configuration) { }
 
+        /// <summary>
+        /// Configures the AddIn Pipeline. (Optional Override)
+        /// </summary>
+        /// <param name="app">The application.</param>
+        /// <param name="env">The env.</param>
+        /// <param name="configuration">The configuration.</param>
         virtual void Configure(IApplicationBuilder app, IHostEnvironment env, IConfiguration configuration) { }
     }
 }

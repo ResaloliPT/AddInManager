@@ -1,6 +1,6 @@
-﻿namespace ResaloliPT.AddinManager.Abstractions
+﻿namespace ResaloliPT.AddInManager.Abstractions
 {
-    public enum AddinState
+    public enum AddInState
     {
         LOADED,
         UNLOADED

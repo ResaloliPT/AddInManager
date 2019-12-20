@@ -8,53 +8,53 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using ResaloliPT.AddinManager.Abstractions;
+using ResaloliPT.AddInManager.Abstractions;
 
-namespace ResaloliPT.AddinManager
+namespace ResaloliPT.AddInManager
 {
-    public sealed class AddinProvider : IAddinProvider
+    public sealed class AddInProvider : IAddInProvider
     {
-        public static IAddinProvider? Instance { get; private set; }
+        public static IAddInProvider? Instance { get; private set; }
 
-        public static IAddinProvider LoadPlugins(IAddinManagerOptions options)
+        public static IAddInProvider LoadPlugins(IAddInManagerOptions options)
         {
             if(Instance != null)
                 throw new InvalidOperationException("Provider already loaded.");
 
             var callingMethod = new StackTrace().GetFrame(1).GetMethod();
             if(callingMethod.Name != "Main" || !callingMethod.IsStatic || callingMethod.ReflectedType.Name != "Program")
-                throw new InvalidOperationException("You must call AddinProvider.LoadPlugins() inside Program.Main().");
+                throw new InvalidOperationException("You must call AddInProvider.LoadPlugins() inside Program.Main().");
 
-            Instance = new AddinProvider();
-            Instance.ScanAddins(options);
+            Instance = new AddInProvider();
+            Instance.ScanAddIns(options);
 
             return Instance;
         }
 
-        private AddinProvider()
+        private AddInProvider()
         {}
 
         internal bool isInPipeline { private get; set; } = false;
 
         internal bool isInServiceContainer { private get; set; } = false;
 
-        private readonly List<IAddin> scannedAddins = new List<IAddin>();
+        private readonly List<IAddIn> scannedAddIns = new List<IAddIn>();
 
-        public void RegisterPipelineAddins(IApplicationBuilder app, IHostEnvironment env, IConfiguration configuration)
+        public void RegisterPipelineAddIns(IApplicationBuilder app, IHostEnvironment env, IConfiguration configuration)
         {
             if(!isInPipeline)
-                throw new InvalidOperationException("Addin Provider was not loaded into the Pipeline!");
+                throw new InvalidOperationException("AddIn Provider was not loaded into the Pipeline!");
 
-            scannedAddins
-                .Where(scannedAddin => scannedAddin.PipelineState == AddinState.UNLOADED)
+            scannedAddIns
+                .Where(scannedAddIn => scannedAddIn.PipelineState == AddInState.UNLOADED)
                 .ToList()
                 .ForEach(addin =>
                 {
-                    if(addin.AddinServicesDependencies.Count() == 0)
+                    if(addin.AddInServicesDependencies.Count() == 0)
                     {
                         addin.Configure(app, env, configuration);
 
-                        addin.PipelineState = AddinState.LOADED;
+                        addin.PipelineState = AddInState.LOADED;
 
                         return;
                     }
@@ -63,21 +63,21 @@ namespace ResaloliPT.AddinManager
                 });
         }
 
-        public void RegisterServiceAddins(IServiceCollection services, IConfiguration configuration)
+        public void RegisterServiceAddIns(IServiceCollection services, IConfiguration configuration)
         {
             if(!isInServiceContainer)
-                throw new InvalidOperationException("Addin Provider was not loaded into the Service Container!");
+                throw new InvalidOperationException("AddIn Provider was not loaded into the Service Container!");
 
-            scannedAddins
-                .Where(scannedAddin => scannedAddin.ServicesState == AddinState.UNLOADED)
+            scannedAddIns
+                .Where(scannedAddIn => scannedAddIn.ServicesState == AddInState.UNLOADED)
                 .ToList()
                 .ForEach(addin =>
                 {
-                    if(addin.AddinServicesDependencies.Count() == 0)
+                    if(addin.AddInServicesDependencies.Count() == 0)
                     {
                         addin.ConfigureService(services, configuration);
 
-                        addin.ServicesState = AddinState.LOADED;
+                        addin.ServicesState = AddInState.LOADED;
 
                         return;
                     }
@@ -86,13 +86,13 @@ namespace ResaloliPT.AddinManager
                 });
         }
 
-        public void ScanAddins(IAddinManagerOptions addinManagerOptions)
+        public void ScanAddIns(IAddInManagerOptions addinManagerOptions)
         {
             var folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, addinManagerOptions.PluginsDirectory);
 
             var externalAssembliesFiles = Directory.GetFiles(folder, "*.dll", SearchOption.AllDirectories);
 
-            var scannedPlugins = new List<IAddin>();
+            var scannedPlugins = new List<IAddIn>();
 
             foreach(string file in externalAssembliesFiles)
             {
@@ -100,79 +100,79 @@ namespace ResaloliPT.AddinManager
 
                 scannedPlugins = assembly
                     .GetTypes()
-                    .Where(type => typeof(IAddin).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
+                    .Where(type => typeof(IAddIn).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
                     .Select(Activator.CreateInstance)
-                    .Cast<IAddin>()
+                    .Cast<IAddIn>()
                     .ToList();
             }
 
-            scannedAddins.AddRange(scannedPlugins); //Adds External Addins
+            scannedAddIns.AddRange(scannedPlugins); //Adds External AddIns
 
             AppDomain.CurrentDomain
                 .GetAssemblies()
                 .ToList()
                 .ForEach(assembly =>
                 {
-                    var localAddins = assembly
+                    var localAddIns = assembly
                         .GetTypes()
-                        .Where(type => typeof(IAddin).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
+                        .Where(type => typeof(IAddIn).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
                         .Select(Activator.CreateInstance)
-                        .Cast<IAddin>()
+                        .Cast<IAddIn>()
                         .ToList();
 
-                    scannedAddins.AddRange(localAddins); //Adds Internal Addins
+                    scannedAddIns.AddRange(localAddIns); //Adds Internal AddIns
                 });
 
 
-            var distinctAddins = scannedAddins.Distinct().ToList(); //Ensure same plugin is loaded once!
+            var distinctAddIns = scannedAddIns.Distinct().ToList(); //Ensure same plugin is loaded once!
 
-            scannedAddins.Clear();
-            scannedAddins.AddRange(distinctAddins);
+            scannedAddIns.Clear();
+            scannedAddIns.AddRange(distinctAddIns);
         }
 
-        private void RegisterPipelineRecursive(IAddin addin, IApplicationBuilder app, IHostEnvironment env, IConfiguration configuration)
+        private void RegisterPipelineRecursive(IAddIn addin, IApplicationBuilder app, IHostEnvironment env, IConfiguration configuration)
         {
-            addin.AddinPipelineDependencies.ToList().ForEach(dependency =>
+            addin.AddInPipelineDependencies.ToList().ForEach(dependency =>
             {
-                if(!scannedAddins.Any(scannedAddin => scannedAddin.AddinId == dependency))
-                    throw new KeyNotFoundException($"The Pipeline Addin with the id '{dependency}' required by '{addin.AddinId}' was not found.");
+                if(!scannedAddIns.Any(scannedAddIn => scannedAddIn.AddInId == dependency))
+                    throw new KeyNotFoundException($"The Pipeline AddIn with the id '{dependency}' required by '{addin.AddInId}' was not found.");
 
             });
 
-            scannedAddins
-                .Where(scannedAddin => scannedAddin.PipelineState == AddinState.UNLOADED)
-                .Where(scannedAddin => addin.AddinPipelineDependencies.Any(dependency => dependency == scannedAddin.AddinId))
+            scannedAddIns
+                .Where(scannedAddIn => scannedAddIn.PipelineState == AddInState.UNLOADED)
+                .Where(scannedAddIn => addin.AddInPipelineDependencies.Any(dependency => dependency == scannedAddIn.AddInId))
                 .ToList()
-                .ForEach(scannedAddin =>
+                .ForEach(scannedAddIn =>
                 {
-                    RegisterPipelineRecursive(scannedAddin, app, env, configuration);
+                    RegisterPipelineRecursive(scannedAddIn, app, env, configuration);
 
-                    scannedAddin.Configure(app, env, configuration);
+                    scannedAddIn.Configure(app, env, configuration);
 
-                    scannedAddin.PipelineState = AddinState.LOADED;
+                    scannedAddIn.PipelineState = AddInState.LOADED;
                 });
         }
 
-        private void RegisterServicesRecursive(IAddin addin, IServiceCollection services, IConfiguration configuration)
+        private void RegisterServicesRecursive(IAddIn addin, IServiceCollection services, IConfiguration configuration)
         {
-            addin.AddinServicesDependencies.ToList().ForEach(dependency =>
+            addin.AddInServicesDependencies.ToList().ForEach(dependency =>
             {
-                if(!scannedAddins.Any(scannedAddin => scannedAddin.AddinId == dependency))
-                    throw new KeyNotFoundException($"The Service Addin with the id '{dependency}' required by '{addin.AddinId}' was not found.");
+                if(!scannedAddIns.Any(scannedAddIn => scannedAddIn.AddInId == dependency))
+                    throw new KeyNotFoundException($"The Service AddIn with the id '{dependency}' required by '{addin.AddInId}' was not found.");
 
             });
 
-            scannedAddins
-                .Where(scannedAddin => scannedAddin.PipelineState == AddinState.UNLOADED)
-                .Where(scannedAddin => addin.AddinServicesDependencies.Any(dependency => dependency == scannedAddin.AddinId))
+            scannedAddIns
+                .Where(scannedAddIn => scannedAddIn.PipelineState == AddInState.UNLOADED)
+                .Where(scannedAddIn => addin.AddInServicesDependencies.Any(dependency => dependency == scannedAddIn.AddInId))
                 .ToList()
-                .ForEach(scannedAddin =>
+                .ForEach(scannedAddIn =>
                 {
-                    RegisterServicesRecursive(scannedAddin, services, configuration);
+                    RegisterServicesRecursive(scannedAddIn, services, configuration);
 
-                    scannedAddin.ConfigureService(services, configuration);
+                    scannedAddIn.ConfigureService(services, configuration);
 
-                    scannedAddin.ServicesState = AddinState.LOADED;
+                    scannedAddIn.ServicesState = AddInState.LOADED;
                 });
         }
     }

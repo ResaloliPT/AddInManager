@@ -1,21 +1,21 @@
 ﻿using Microsoft.Extensions.Configuration;
-using ResaloliPT.AddinManager.Abstractions;
+using ResaloliPT.AddInManager.Abstractions;
 
-namespace ResaloliPT.AddinManager.Extensions.Microsoft.DependencyInjection
+namespace ResaloliPT.AddInManager.Extensions.Microsoft.DependencyInjection
 {
-    public sealed class AddinManagerOptions : IAddinManagerOptions
+    public sealed class AddInManagerOptions : IAddInManagerOptions
     {
         public string PluginsDirectory { get; set; }
 
         /// <summary>
-        /// Creates a AddinManagerOptions instance with values collected from the application settings Ex:. appsettings.json
+        /// Creates a AddInManagerOptions instance with values collected from the application settings Ex:. appsettings.json
         /// </summary>
-        /// <returns>The Addin Manager Options from the app settings</returns>
-        public IAddinManagerOptions GetOptions(IConfiguration configuration)
+        /// <returns>The AddIn Manager Options from the app settings</returns>
+        public IAddInManagerOptions GetOptions(IConfiguration configuration)
         {
-            var options = new AddinManagerOptions();
+            var options = new AddInManagerOptions();
 
-            configuration.GetSection(nameof(AddinManagerOptions)).Bind(options);
+            configuration.GetSection(nameof(AddInManagerOptions)).Bind(options);
 
             return options;
         }
