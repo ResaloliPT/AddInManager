@@ -13,7 +13,7 @@ For the Abstractions Refer to: [Abstractions NuGet](https://www.nuget.org/packag
 ### Required
 
 In Program.cs
-`AddInProvider.Instance.ScanPlugins()`
+Add in Main(): `AddInProvider.Instance.ScanPlugins()`
 
 ### Optional
 
