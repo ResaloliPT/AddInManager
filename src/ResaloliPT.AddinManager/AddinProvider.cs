@@ -34,16 +34,13 @@ namespace ResaloliPT.AddInManager
         private AddInProvider()
         {}
 
-        internal bool isInPipeline { private get; set; } = false;
-
-        internal bool isInServiceContainer { private get; set; } = false;
-
         private readonly List<IAddIn> scannedAddIns = new List<IAddIn>();
 
         public void RegisterPipelineAddIns(IApplicationBuilder app, IHostEnvironment env, IConfiguration configuration)
         {
-            if(!isInPipeline)
-                throw new InvalidOperationException("AddIn Provider was not loaded into the Pipeline!");
+            var callingMethod = new StackTrace().GetFrame(1).GetMethod();
+            if(callingMethod.Name != "Configure" || callingMethod.ReflectedType.Name != "Startup")
+                throw new InvalidOperationException("You must call AddInProvider.RegisterPipelineAddIns() inside Startup.Configure().");
 
             scannedAddIns
                 .Where(scannedAddIn => scannedAddIn.PipelineState == AddInState.UNLOADED)
@@ -65,8 +62,9 @@ namespace ResaloliPT.AddInManager
 
         public void RegisterServiceAddIns(IServiceCollection services, IConfiguration configuration)
         {
-            if(!isInServiceContainer)
-                throw new InvalidOperationException("AddIn Provider was not loaded into the Service Container!");
+            var callingMethod = new StackTrace().GetFrame(1).GetMethod();
+            if(callingMethod.Name != "ConfigureServices" || callingMethod.ReflectedType.Name != "Startup")
+                throw new InvalidOperationException("You must call AddInProvider.RegisterServiceAddIns() inside Startup.ConfigureServices().");
 
             scannedAddIns
                 .Where(scannedAddIn => scannedAddIn.ServicesState == AddInState.UNLOADED)
@@ -90,7 +88,21 @@ namespace ResaloliPT.AddInManager
         {
             var folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, addinManagerOptions.PluginsDirectory);
 
-            var externalAssembliesFiles = Directory.GetFiles(folder, "*.dll", SearchOption.AllDirectories);
+            var externalAssembliesFiles = Array.Empty<string>();
+
+            try
+            {
+                externalAssembliesFiles = Directory.GetFiles(folder, "*.dll", SearchOption.AllDirectories);
+
+            }
+            catch(DirectoryNotFoundException ex)
+            {
+                Console.WriteLine($"AddIns Folder doesn't exist. Configured Folder was '{folder}'");
+                Console.WriteLine("A new folder will be created.");
+
+                Directory.CreateDirectory(folder);
+            }
+
 
             var scannedPlugins = new List<IAddIn>();
 
